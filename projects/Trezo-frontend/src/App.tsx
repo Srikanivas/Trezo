@@ -1,56 +1,46 @@
-import { SupportedWallet, WalletId, WalletManager, WalletProvider } from '@txnlab/use-wallet-react'
-import { SnackbarProvider } from 'notistack'
-import Home from './Home'
-import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
+import React, { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { useAuth } from "./contexts/useAuth";
+import LoginForm from "./components/auth/LoginForm";
+import RegisterForm from "./components/auth/RegisterForm";
+import TreasuryDashboard from "./components/dashboard/TreasuryDashboard";
+import { SnackbarProvider } from "notistack";
+import ErrorBoundary from "./components/ErrorBoundary";
+import "./styles/globals.css";
 
-let supportedWallets: SupportedWallet[]
-if (import.meta.env.VITE_ALGOD_NETWORK === 'localnet') {
-  const kmdConfig = getKmdConfigFromViteEnvironment()
-  supportedWallets = [
-    {
-      id: WalletId.KMD,
-      options: {
-        baseServer: kmdConfig.server,
-        token: String(kmdConfig.token),
-        port: String(kmdConfig.port),
-      },
-    },
-  ]
-} else {
-  supportedWallets = [
-    { id: WalletId.DEFLY },
-    { id: WalletId.PERA },
-    { id: WalletId.EXODUS },
-    // If you are interested in WalletConnect v2 provider
-    // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
-  ]
-}
+const AppContent: React.FC = () => {
+  const { company, isLoading } = useAuth();
+  const [showRegister, setShowRegister] = useState(false);
 
-export default function App() {
-  const algodConfig = getAlgodConfigFromViteEnvironment()
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
-  const walletManager = new WalletManager({
-    wallets: supportedWallets,
-    defaultNetwork: algodConfig.network,
-    networks: {
-      [algodConfig.network]: {
-        algod: {
-          baseServer: algodConfig.server,
-          port: algodConfig.port,
-          token: String(algodConfig.token),
-        },
-      },
-    },
-    options: {
-      resetNetwork: true,
-    },
-  })
+  if (company) {
+    return <TreasuryDashboard />;
+  }
 
+  if (showRegister) {
+    return <RegisterForm onSwitchToLogin={() => setShowRegister(false)} />;
+  }
+
+  return <LoginForm onSwitchToRegister={() => setShowRegister(true)} />;
+};
+
+const App: React.FC = () => {
   return (
-    <SnackbarProvider maxSnack={3}>
-      <WalletProvider manager={walletManager}>
-        <Home />
-      </WalletProvider>
-    </SnackbarProvider>
-  )
-}
+    <ErrorBoundary>
+      <SnackbarProvider maxSnack={3}>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </SnackbarProvider>
+    </ErrorBoundary>
+  );
+};
+
+export default App;

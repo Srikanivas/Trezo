@@ -1,22 +1,22 @@
-import { useWallet, Wallet, WalletId } from '@txnlab/use-wallet-react'
-import Account from './Account'
+import { useWallet, Wallet, WalletId } from "@txnlab/use-wallet-react";
+import Account from "./Account";
 
 interface ConnectWalletInterface {
-  openModal: boolean
-  closeModal: () => void
+  openModal: boolean;
+  closeModal: () => void;
 }
 
 const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
-  const { wallets, activeAddress } = useWallet()
+  const { wallets, activeAddress } = useWallet();
 
-  const isKmd = (wallet: Wallet) => wallet.id === WalletId.KMD
+  const isKmd = (wallet: Wallet) => wallet.id === WalletId.KMD;
 
   return (
-    <dialog id="connect_wallet_modal" className={`modal ${openModal ? 'modal-open' : ''}`}style={{ display: openModal ? 'block' : 'none' }}>
-      <form method="dialog" className="modal-box">
-        <h3 className="font-bold text-2xl">Select wallet provider</h3>
+    <dialog id="connect_wallet_modal" className={`modal ${openModal ? "modal-open" : ""}`}>
+      <div className="modal-box">
+        <h3 className="modal-title">🔗 Connect Your Wallet</h3>
 
-        <div className="grid m-2 pt-5">
+        <div className="btn-grid">
           {activeAddress && (
             <>
               <Account />
@@ -28,59 +28,60 @@ const ConnectWallet = ({ openModal, closeModal }: ConnectWalletInterface) => {
             wallets?.map((wallet) => (
               <button
                 data-test-id={`${wallet.id}-connect`}
-                className="btn border-teal-800 border-1  m-2"
+                className="btn btn-secondary"
                 key={`provider-${wallet.id}`}
                 onClick={() => {
-                  return wallet.connect()
+                  return wallet.connect();
                 }}
               >
                 {!isKmd(wallet) && (
                   <img
                     alt={`wallet_icon_${wallet.id}`}
                     src={wallet.metadata.icon}
-                    style={{ objectFit: 'contain', width: '30px', height: 'auto' }}
+                    style={{ objectFit: "contain", width: "24px", height: "24px" }}
                   />
                 )}
-                <span>{isKmd(wallet) ? 'LocalNet Wallet' : wallet.metadata.name}</span>
+                <span>{isKmd(wallet) ? "LocalNet Wallet" : wallet.metadata.name}</span>
               </button>
             ))}
         </div>
 
-        <div className="modal-action grid">
+        <div className="modal-action">
           <button
             data-test-id="close-wallet-modal"
-            className="btn"
+            className="btn btn-accent"
             onClick={() => {
-              closeModal()
+              closeModal();
             }}
           >
             Close
           </button>
           {activeAddress && (
             <button
-              className="btn btn-warning"
+              className="btn btn-primary"
               data-test-id="logout"
               onClick={async () => {
                 if (wallets) {
-                  const activeWallet = wallets.find((w) => w.isActive)
+                  const activeWallet = wallets.find((w) => w.isActive);
                   if (activeWallet) {
-                    await activeWallet.disconnect()
+                    await activeWallet.disconnect();
                   } else {
                     // Required for logout/cleanup of inactive providers
                     // For instance, when you login to localnet wallet and switch network
                     // to testnet/mainnet or vice verse.
-                    localStorage.removeItem('@txnlab/use-wallet:v3')
-                    window.location.reload()
+                    localStorage.removeItem("@txnlab/use-wallet:v3");
+                    window.location.reload();
                   }
                 }
               }}
             >
+              <span className="emoji">🚪</span>
               Logout
             </button>
           )}
         </div>
-      </form>
+      </div>
     </dialog>
-  )
-}
-export default ConnectWallet
+  );
+};
+export default ConnectWallet;

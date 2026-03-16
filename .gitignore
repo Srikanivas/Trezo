@@ -168,3 +168,20 @@ cython_debug/
 # NPM
 node_modules
 
+# Build outputs
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# CSV credential files
+*.csv
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Vercel
+.vercel
+

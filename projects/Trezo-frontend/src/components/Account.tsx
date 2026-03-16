@@ -1,24 +1,22 @@
-import { useWallet } from '@txnlab/use-wallet-react'
-import { useMemo } from 'react'
-import { ellipseAddress } from '../utils/ellipseAddress'
-import { getAlgodConfigFromViteEnvironment } from '../utils/network/getAlgoClientConfigs'
+import { useWallet } from "@txnlab/use-wallet-react";
+import { ellipseAddress } from "../utils/ellipseAddress";
 
 const Account = () => {
-  const { activeAddress } = useWallet()
-  const algoConfig = getAlgodConfigFromViteEnvironment()
+  const { activeAddress, activeAccount } = useWallet();
 
-  const networkName = useMemo(() => {
-    return algoConfig.network === '' ? 'localnet' : algoConfig.network.toLocaleLowerCase()
-  }, [algoConfig.network])
+  if (!activeAddress) {
+    return null;
+  }
 
   return (
-    <div>
-      <a className="text-xl" target="_blank" href={`https://lora.algokit.io/${networkName}/account/${activeAddress}/`}>
-        Address: {ellipseAddress(activeAddress)}
-      </a>
-      <div className="text-xl">Network: {networkName}</div>
+    <div className="card card-compact">
+      <div className="text-center">
+        <h4 className="font-semibold mb-2">Connected Account</h4>
+        <p className="text-sm font-mono opacity-70">{ellipseAddress(activeAddress)}</p>
+        {activeAccount && <p className="text-xs opacity-70 mt-1">Balance: {((activeAccount as any).amount / 1000000).toFixed(6)} ALGO</p>}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Account
+export default Account;
