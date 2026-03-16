@@ -103,6 +103,7 @@ export interface AssetAllocation {
   assetId: number;
   balance: number;
   percentage: number;
+  decimals: number;
 }
 
 export interface TreasurySummary {
