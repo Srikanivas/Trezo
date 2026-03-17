@@ -119,59 +119,59 @@ const TreasuryDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <Building2 className="h-5 w-5 text-white" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="bg-indigo-600 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+              <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">Trezo Treasury</h1>
-              <p className="text-xs text-gray-500">{company.companyName}</p>
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-lg font-bold text-gray-900 leading-tight">Trezo Treasury</h1>
+              <p className="text-xs text-gray-500 truncate max-w-[120px] sm:max-w-none">{company.companyName}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <NotificationBell />
             <button
               onClick={() => setShowInvoicePage(true)}
-              className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 text-indigo-600 text-sm rounded-lg hover:bg-indigo-50 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 border border-indigo-200 text-indigo-600 text-xs sm:text-sm rounded-lg hover:bg-indigo-50 transition-colors"
             >
-              <FileText className="h-4 w-4" />
+              <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Invoices</span>
             </button>
             <button
               onClick={() => setShowPaymentsPage(true)}
-              className="flex items-center gap-1.5 px-3 py-2 border border-purple-200 text-purple-600 text-sm rounded-lg hover:bg-purple-50 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 border border-purple-200 text-purple-600 text-xs sm:text-sm rounded-lg hover:bg-purple-50 transition-colors"
             >
-              <CreditCard className="h-4 w-4" />
+              <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Payments</span>
             </button>
             <button
               onClick={() => setShowSendModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              <Send className="h-4 w-4" />
-              <span className="hidden sm:inline">Send Payment</span>
+              <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Send</span>
             </button>
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center gap-1.5 px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="p-1.5 sm:p-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              title="Refresh"
             >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">Refresh</span>
+              <RefreshCw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${refreshing ? "animate-spin" : ""}`} />
             </button>
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-600 text-sm rounded-lg hover:bg-red-50 transition-colors"
+              className="p-1.5 sm:p-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+              title="Sign Out"
             >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>}
 
         <TreasurySummaryCard
@@ -183,7 +183,7 @@ const TreasuryDashboard: React.FC = () => {
         <AnalyticsCards analytics={analytics} isLoading={loadingAnalytics} />
 
         {/* Invoice Summary Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
             { label: "Payables", value: invoiceSummary?.total_payables, icon: TrendingDown, color: "text-red-600", bg: "bg-red-50" },
             {
@@ -208,17 +208,17 @@ const TreasuryDashboard: React.FC = () => {
               bg: "bg-amber-50",
             },
           ].map(({ label, value, icon: Icon, color, bg }) => (
-            <div key={label} className="bg-white border border-gray-200 rounded-xl p-4">
+            <div key={label} className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
               <div className="flex items-center gap-2 mb-2">
-                <div className={`${bg} p-1.5 rounded-lg`}>
-                  <Icon className={`h-4 w-4 ${color}`} />
+                <div className={`${bg} p-1.5 rounded-lg flex-shrink-0`}>
+                  <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${color}`} />
                 </div>
-                <span className="text-xs text-gray-500">{label}</span>
+                <span className="text-xs text-gray-500 leading-tight">{label}</span>
               </div>
               {loadingInvoiceSummary ? (
                 <div className="h-6 bg-gray-100 rounded animate-pulse" />
               ) : (
-                <p className={`text-lg font-bold ${color}`}>{value ?? "—"}</p>
+                <p className={`text-base sm:text-lg font-bold ${color} truncate`}>{value ?? "—"}</p>
               )}
             </div>
           ))}
@@ -226,20 +226,20 @@ const TreasuryDashboard: React.FC = () => {
 
         <button
           onClick={() => setShowInvoicePage(true)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+          className="w-full flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
         >
           <div className="flex items-center gap-3">
-            <FileText className="h-5 w-5" />
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
             <div className="text-left">
               <p className="text-sm font-semibold">Invoice & Payment Center</p>
-              <p className="text-xs text-indigo-200">Create invoices, approve payments, manage budgets</p>
+              <p className="text-xs text-indigo-200 hidden sm:block">Create invoices, approve payments, manage budgets</p>
             </div>
           </div>
-          <ArrowRight className="h-5 w-5" />
+          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
         </button>
 
         {/* Asset Allocation + AI CFO Chat */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
           <div className="lg:col-span-2">
             <AssetAllocationChart
               assets={summary?.assets ?? []}

@@ -1,45 +1,213 @@
-# Trezo
+# Trezo — Treasury Wallet System
 
-This starter full stack project has been generated using AlgoKit. See below for default getting started instructions.
+Trezo is a **secure custodial treasury wallet system** for companies on **Algorand**. It combines:
 
-## Setup
+- a **backend API** for authentication, treasury operations, audit logging, and secure key handling
+- a **web dashboard** for treasury visibility and actions
+- an optional **smart contracts** workspace (AlgoKit) for on-chain app logic and generated clients
 
-### Initial setup
-1. Clone this repository to your local machine.
-2. Ensure [Docker](https://www.docker.com/) is installed and operational. Then, install `AlgoKit` following this [guide](https://github.com/algorandfoundation/algokit-cli#install).
-3. Run `algokit project bootstrap all` in the project directory. This command sets up your environment by installing necessary dependencies, setting up a Python virtual environment, and preparing your `.env` file.
-4. In the case of a smart contract project, execute `algokit generate env-file -a target_network localnet` from the `Trezo-contracts` directory to create a `.env.localnet` file with default configuration for `localnet`.
-5. To build your project, execute `algokit project run build`. This compiles your project and prepares it for running.
-6. For project-specific instructions, refer to the READMEs of the child projects:
-   - Smart Contracts: [Trezo-contracts](projects/Trezo-contracts/README.md)
-   - Frontend Application: [Trezo-frontend](projects/Trezo-frontend/README.md)
+This repository is organized as a **monorepo** under `projects/`.
 
-> This project is structured as a monorepo, refer to the [documentation](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/run.md) to learn more about custom command orchestration via `algokit project run`.
+## What’s in this repo
 
-### Subsequently
+- **`projects/Trezo-backend/`**: Node.js + TypeScript + Express API (Algorand + KMS + DB)
+- **`projects/Trezo-frontend/`**: React + TypeScript dashboard (Vite, Tailwind, charts)
+- **`projects/Trezo-contracts/`**: AlgoKit smart contracts workspace (Python/Poetry)
+- **`projects/README.md`**: deeper system documentation (end-to-end setup & security notes)
 
-1. If you update to the latest source code and there are new dependencies, you will need to run `algokit project bootstrap all` again.
-2. Follow step 3 above.
+## Architecture (high level)
 
-## Tools
+### Backend (API + services)
 
-This project makes use of Python and React to build Algorand smart contracts and to provide a base project configuration to develop frontends for your Algorand dApps and interactions with smart contracts. The following tools are in use:
+- **Auth**: JWT-based authentication
+- **Key security**: private keys are **encrypted with AWS KMS** before storage
+- **Blockchain**: Algorand integration via `algosdk` (commonly TestNet during development)
+- **Persistence**: database-backed company + treasury data (PostgreSQL client is used in code)
+- **Auditability**: structured audit log of treasury operations
 
-- Algorand, AlgoKit, and AlgoKit Utils
-- Python dependencies including Poetry, Black, Ruff or Flake8, mypy, pytest, and pip-audit
-- React and related dependencies including AlgoKit Utils, Tailwind CSS, daisyUI, use-wallet, npm, jest, playwright, Prettier, ESLint, and Github Actions workflows for build validation
+### Frontend (dashboard)
 
-### VS Code
+- **Treasury dashboard**: balances, assets, transactions, payments, invoices
+- **Wallet integrations**: supports Algorand wallet connectors via `use-wallet` (where applicable)
+- **API integration**: talks to backend via `VITE_BACKEND_URL`
 
-It has also been configured to have a productive dev experience out of the box in [VS Code](https://code.visualstudio.com/), see the [backend .vscode](./backend/.vscode) and [frontend .vscode](./frontend/.vscode) folders for more details.
+### Smart contracts (optional)
 
-## Integrating with smart contracts and application clients
+If you are building/using on-chain apps, `projects/Trezo-contracts` provides the AlgoKit workflow
+and the frontend can generate typed clients into `projects/Trezo-frontend/src/contracts`.
 
-Refer to the [Trezo-contracts](projects/Trezo-contracts/README.md) folder for overview of working with smart contracts, [projects/Trezo-frontend](projects/Trezo-frontend/README.md) for overview of the React project and the [projects/Trezo-frontend/contracts](projects/Trezo-frontend/src/contracts/README.md) folder for README on adding new smart contracts from backend as application clients on your frontend. The templates provided in these folders will help you get started.
-When you compile and generate smart contract artifacts, your frontend component will automatically generate typescript application clients from smart contract artifacts and move them to `frontend/src/contracts` folder, see [`generate:app-clients` in package.json](projects/Trezo-frontend/package.json). Afterwards, you are free to import and use them in your frontend application.
+## Quickstart (local development)
 
-The frontend starter also provides an example of interactions with your HelloWorldClient in [`AppCalls.tsx`](projects/Trezo-frontend/src/components/AppCalls.tsx) component by default.
+### Prerequisites
 
-## Next Steps
+- **Node.js**: 20.x recommended (repo uses modern Vite + TS)
+- **npm**: 9+
+- **PostgreSQL**: running locally (or a managed instance)
+- **AWS credentials** with KMS access (for encryption/decryption)
 
-You can take this project and customize it to build your own decentralized applications on Algorand. Make sure to understand how to use AlgoKit and how to write smart contracts for Algorand before you start.
+### Install dependencies
+
+From the repo root:
+
+```bash
+cd projects/Trezo-backend
+npm install
+
+cd ../Trezo-frontend
+npm install
+```
+
+Or run the helper scripts from `projects/`:
+
+- Windows: `projects/setup-trezo-treasury.bat`
+- macOS/Linux: `projects/setup-trezo-treasury.sh`
+
+### Configure environment variables
+
+Create `.env` files based on your environment. Common variables:
+
+#### Backend (`projects/Trezo-backend/.env`)
+
+```env
+# Server
+PORT=3001
+NODE_ENV=development
+
+# Auth
+JWT_SECRET=change-me
+
+# Database (example)
+DATABASE_URL=postgresql://username:password@localhost:5432/trezo_treasury
+
+# AWS KMS
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=...
+KMS_KEY_ID=alias/your-kms-key-alias
+
+# Algorand (example)
+ALGOD_SERVER=https://testnet-api.algonode.cloud
+INDEXER_SERVER=https://testnet-idx.algonode.cloud
+```
+
+#### Frontend (`projects/Trezo-frontend/.env`)
+
+```env
+VITE_BACKEND_URL=http://localhost:3001/api/v1
+VITE_ALGOD_SERVER=https://testnet-api.algonode.cloud
+VITE_INDEXER_SERVER=https://testnet-idx.algonode.cloud
+```
+
+### Initialize the database (backend)
+
+```bash
+cd projects/Trezo-backend
+npm run init-db
+```
+
+### Run the apps
+
+```bash
+# Terminal 1
+cd projects/Trezo-backend
+npm run dev
+
+# Terminal 2
+cd projects/Trezo-frontend
+npm run dev
+```
+
+- **Frontend**: `http://localhost:5173`
+- **Backend API**: `http://localhost:3001/api/v1`
+
+## API overview (backend)
+
+Base URL:
+
+```text
+http://localhost:3001/api/v1
+```
+
+Common endpoint groups (high level):
+
+### Company / Auth
+
+- `POST /company/register` — register a company (and provision treasury wallet)
+- `POST /company/login` — login, receive JWT
+- `GET /company/profile` — get company profile (auth required)
+
+### Treasury
+
+- `GET /treasury/balance/:companyId` — current balance + assets
+- `GET /treasury/transactions/:companyId` — transaction history
+- `POST /treasury/send` — send ALGO / ASA payments
+- `GET /treasury/audit/:companyId` — audit log
+
+Health:
+
+- `GET /health`
+
+For request/response details and implementation specifics, see `projects/Trezo-backend/README.md`.
+
+## Services (backend) — what they do
+
+You’ll commonly see these backend responsibilities reflected as “services”:
+
+- **KMS service**: encrypt/decrypt private key material using AWS KMS
+- **Wallet service**: create/recover Algorand accounts, build/sign transactions
+- **Treasury service**: business rules for sending payments, summarizing balances, assets
+- **Audit/logging**: record operations (who/what/when), plus structured application logs
+
+## Security model (important)
+
+- **Private keys are never stored in plaintext**.
+- Encryption keys stay in **AWS KMS**; the DB stores only encrypted blobs.
+- Backend APIs should be protected with **JWT** and deployed behind **HTTPS** in production.
+
+## Smart contracts workflow (optional)
+
+If you are using contracts:
+
+- Smart contracts live in `projects/Trezo-contracts/`
+- The frontend can generate typed app clients via:
+
+```bash
+cd projects/Trezo-frontend
+npm run dev
+```
+
+That dev script runs `algokit project link --all` before starting Vite, linking any generated artifacts.
+
+## Repo documentation map
+
+- **System-level**: `projects/README.md`
+- **Backend**: `projects/Trezo-backend/README.md`
+- **Frontend**: `projects/Trezo-frontend/README.md`
+- **Frontend contracts integration**: `projects/Trezo-frontend/src/contracts/README.md`
+- **Contracts**: `projects/Trezo-contracts/README.md`
+
+## Common scripts
+
+### Backend (`projects/Trezo-backend`)
+
+- `npm run dev` — run API with hot reload
+- `npm run build` — TypeScript build
+- `npm start` — run built server
+- `npm run init-db` — initialize schema
+- `npm run lint` / `npm test` — quality gates
+
+### Frontend (`projects/Trezo-frontend`)
+
+- `npm run dev` — generate/link clients + start Vite dev server
+- `npm run build` — typecheck + production build
+- `npm run preview` — preview build locally
+
+## Troubleshooting
+
+- **DB connection errors**: ensure DB is running and `DATABASE_URL` is correct.
+- **KMS errors**: check AWS credentials, region, and `KMS_KEY_ID` permissions.
+- **Algorand RPC errors**: verify network endpoints and outbound connectivity.
+
+## License
+
+MIT (see the project license file, if present).

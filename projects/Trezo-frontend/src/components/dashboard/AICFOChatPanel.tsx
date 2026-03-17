@@ -287,7 +287,10 @@ const AICFOChatPanel = forwardRef<AICFOChatPanelHandle>((_, ref) => {
     .find((m) => m.role === "assistant" && m.action_data && !m.tx_result && m.content.includes("Reply **confirm**"));
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col" style={{ height: "520px" }}>
+    <div
+      className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col"
+      style={{ height: "clamp(420px, 60vh, 520px)" }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50 flex-shrink-0">
         <div className="flex items-center gap-2.5">

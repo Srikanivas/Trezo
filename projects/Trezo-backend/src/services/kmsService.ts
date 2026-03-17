@@ -37,6 +37,8 @@ export class KMSService {
   }
 
   static async encrypt(plaintext: string): Promise<string> {
+    const isProduction = process.env.NODE_ENV === "production";
+
     if (!this.useLocalEncryption) {
       try {
         const command = new EncryptCommand({
@@ -48,14 +50,22 @@ export class KMSService {
         logger.info("Successfully encrypted data using AWS KMS");
         return Buffer.from(result.CiphertextBlob).toString("base64");
       } catch (error) {
-        logger.warn("AWS KMS encryption failed, falling back to local encryption:", error);
+        if (isProduction) {
+          logger.error("AWS KMS encryption failed in production — refusing local fallback:", error);
+          throw new Error("KMS encryption unavailable. Cannot store private key securely.");
+        }
+        logger.warn("AWS KMS encryption failed, falling back to local encryption (dev only):", error);
         this.useLocalEncryption = true;
       }
     }
 
+    if (isProduction) {
+      throw new Error("Local encryption fallback is disabled in production.");
+    }
+
     try {
       const encryptedData = this.encryptLocal(plaintext);
-      logger.info("Successfully encrypted data using local encryption");
+      logger.info("Successfully encrypted data using local encryption (dev only)");
       return encryptedData;
     } catch (error) {
       logger.error("Local encryption error:", error);
@@ -64,6 +74,8 @@ export class KMSService {
   }
 
   static async decrypt(encryptedData: string): Promise<string> {
+    const isProduction = process.env.NODE_ENV === "production";
+
     if (!this.useLocalEncryption) {
       try {
         const command = new DecryptCommand({
@@ -74,13 +86,21 @@ export class KMSService {
         logger.info("Successfully decrypted data using AWS KMS");
         return Buffer.from(result.Plaintext).toString();
       } catch (error) {
-        logger.warn("AWS KMS decryption failed, trying local decryption:", error);
+        if (isProduction) {
+          logger.error("AWS KMS decryption failed in production — refusing local fallback:", error);
+          throw new Error("KMS decryption unavailable. Cannot retrieve private key.");
+        }
+        logger.warn("AWS KMS decryption failed, trying local decryption (dev only):", error);
       }
+    }
+
+    if (isProduction) {
+      throw new Error("Local decryption fallback is disabled in production.");
     }
 
     try {
       const decryptedData = this.decryptLocal(encryptedData);
-      logger.info("Successfully decrypted data using local encryption");
+      logger.info("Successfully decrypted data using local encryption (dev only)");
       return decryptedData;
     } catch (error) {
       logger.error("Local decryption error:", error);

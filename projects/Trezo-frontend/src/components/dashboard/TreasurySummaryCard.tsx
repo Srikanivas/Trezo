@@ -51,7 +51,7 @@ const TreasurySummaryCard: React.FC<Props> = ({ summary, walletAddress, isLoadin
         </div>
 
         {/* Asset balances grid */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
           {/* ALGO */}
           <div className="bg-white/10 rounded-xl p-3">
             <div className="flex items-center gap-1.5 mb-1">

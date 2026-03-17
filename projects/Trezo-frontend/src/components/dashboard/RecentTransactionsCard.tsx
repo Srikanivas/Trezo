@@ -42,20 +42,24 @@ const RecentTransactionsCard: React.FC<Props> = ({ transactions, walletAddress, 
             return (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors gap-2"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`p-1.5 rounded-full ${isOutgoing ? "bg-rose-100" : "bg-green-100"}`}>
-                    {isOutgoing ? <ArrowUpRight className="h-4 w-4 text-rose-600" /> : <ArrowDownLeft className="h-4 w-4 text-green-600" />}
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <div className={`p-1.5 rounded-full flex-shrink-0 ${isOutgoing ? "bg-rose-100" : "bg-green-100"}`}>
+                    {isOutgoing ? (
+                      <ArrowUpRight className="h-3.5 w-3.5 text-rose-600" />
+                    ) : (
+                      <ArrowDownLeft className="h-3.5 w-3.5 text-green-600" />
+                    )}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-gray-900">{isOutgoing ? "Sent" : "Received"}</p>
-                    <p className="text-xs text-gray-400 font-mono">{tx.id.slice(0, 12)}...</p>
+                    <p className="text-xs text-gray-400 font-mono truncate">{tx.id.slice(0, 10)}...</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="text-right">
-                    <p className={`text-sm font-semibold ${isOutgoing ? "text-rose-600" : "text-green-600"}`}>
+                    <p className={`text-xs sm:text-sm font-semibold ${isOutgoing ? "text-rose-600" : "text-green-600"}`}>
                       {isOutgoing ? "-" : "+"}
                       {amountAlgo.toFixed(4)} ALGO
                     </p>
@@ -65,9 +69,9 @@ const RecentTransactionsCard: React.FC<Props> = ({ transactions, walletAddress, 
                     href={getTransactionUrl(tx.id)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-indigo-600"
+                    className="text-gray-400 hover:text-indigo-600 flex-shrink-0"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </a>
                 </div>
               </div>

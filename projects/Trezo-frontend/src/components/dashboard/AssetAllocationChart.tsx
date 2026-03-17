@@ -41,7 +41,10 @@ const AssetAllocationChart: React.FC<Props> = ({ assets, isLoading, onQuickActio
   const chartData = assets.filter((a) => a.balance > 0);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl flex flex-col gap-0 overflow-hidden" style={{ height: "520px" }}>
+    <div
+      className="bg-white border border-gray-200 rounded-xl flex flex-col gap-0 overflow-hidden"
+      style={{ height: "clamp(420px, 60vh, 520px)" }}
+    >
       {/* ── Pie Chart ── */}
       <div className="px-5 pt-5 pb-3 flex-shrink-0">
         <h2 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
